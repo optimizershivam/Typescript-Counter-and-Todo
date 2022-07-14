@@ -1,26 +1,29 @@
-import React, { useState } from 'react'
+
 
 
 interface TodoinputProps {
-    onClick: (value:string) => void
+    handleAdd: (title:string) => void
+    setInputValue:(value:string)=>void
+    value:string
 }
-const Todoinput = ({onClick}:TodoinputProps) => {
+const Todoinput = ({handleAdd,setInputValue,value}:TodoinputProps) => {
 
-    const [text,setText] = useState<string>("")
+    // const [text,setText] = useState<string>("")
 
     const changeHandler:React 
     .ChangeEventHandler<HTMLInputElement> = (e) => 
     {
-        setText(e.target.value)
+        setInputValue(e.target.value)
     }
-    const handleAdd: React.MouseEventHandler<HTMLButtonElement> = () => 
+    const handleAddClick: React.MouseEventHandler<HTMLButtonElement> = () => 
     {
-      onClick(text)
+      handleAdd(value)
+      setInputValue("")
     }
   return (
     <div>
-     <input type={"text"} value={text} onChange={changeHandler}/>
-    <button onClick={handleAdd}>Add</button>
+     <input type={"text"} value={value} onChange={changeHandler}/>
+    <button onClick={handleAddClick}>Add</button>
     </div>
   )
 }

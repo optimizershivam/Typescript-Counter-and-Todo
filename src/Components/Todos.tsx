@@ -12,17 +12,21 @@ export interface TodoitemProps
 
 const Todos = () => {
     const [todos,setTodos] = useState<TodoitemProps[]>([])
+    const [value,setValue] = useState<string>("")
     const handleAdd = (title:string) => 
     {
 
         const payload = 
         {
-            title,
+            title:title,
             status:false,
+            id:Date.now()
         
         }
-        axios.post("http://localhost:8080/todos",payload).
-        then(getTodos)
+        axios.post("http://localhost:8080/todos",payload)
+        .then((res)=> {
+          getTodos()
+        })
         // setTodos([...todos,payload])
     }
 
@@ -35,6 +39,30 @@ const Todos = () => {
              setTodos(data)
             })
     }
+
+    const deleteTodo = (id:number) => 
+    {
+      axios.delete(`http://localhost:8080/todos/${id}`)
+      .then((res)=> {
+        getTodos()
+      })
+    }
+  
+    const updateTodo = (todo:TodoitemProps) => 
+    {
+      axios.patch(`http://localhost:8080/todos/${todo.id}`,{title:value})
+      .then((res)=> {
+        getTodos()
+      })
+    }
+  const toggleTodo = (todo:TodoitemProps) => 
+  {
+    axios.patch(`http://localhost:8080/todos/${todo.id}`,{status:!todo.status})
+      .then((res)=> {
+        getTodos()
+      })
+  }
+
     useEffect(()=> 
     {
         getTodos()
@@ -42,9 +70,11 @@ const Todos = () => {
   return (
     <div>
    <Header label='My Todo'></Header>
-   <Todoinput onClick={handleAdd}/>
-   { todos.length >0 && todos.map((item)=> {
-    return <TodoItem key = {item.id} {...item}/>
+   <Todoinput value={value} setInputValue={setValue} handleAdd={handleAdd}/>
+   { todos.length >0 && todos.map((todo)=> {
+    return <TodoItem handleDeleteTodo={deleteTodo} handleUpdateTodo={updateTodo} handleToggleTodo={toggleTodo} 
+    key = {todo.id} todo={todo}/>
+
    })
 
    }
